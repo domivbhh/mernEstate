@@ -14,7 +14,7 @@ const SignUp = () => {
 
         })
     }
-    console.log(formData)
+    // console.log(formData)
 
     const handleSubmit=async (e)=>{
         e.preventDefault();
@@ -27,7 +27,7 @@ const SignUp = () => {
             });
                 
             const data=await resp.json()
-            console.log(data)
+            // console.log(data)
 
             if (data.success === false) {
               setError(data.message);
@@ -49,7 +49,7 @@ const SignUp = () => {
 
   return (
     <div className='p-3 max-w-lg mx-auto'>
-      <h1 className="text-3xl text-center font-semibold my-7">SignUp</h1>
+      <h1 className="text-3xl text-center font-semibold my-7">SignIn</h1>
       <form className='flex flex-col gap-4 ' onSubmit={handleSubmit}>
         <input
           type="text"

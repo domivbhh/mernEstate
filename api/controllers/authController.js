@@ -1,6 +1,6 @@
 import User from "../models/UserModel.js"
 import bcryptjs from 'bcryptjs'
-// import { errorHandler } from "../utils/error.js"
+import { errorHandler } from "../utils/error.js"
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
@@ -46,6 +46,5 @@ export const signin= async (req,res,next)=>{
   }
   catch(err){
       next(err);
-
   }
 }
