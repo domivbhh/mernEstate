@@ -57,9 +57,12 @@ export const google=async(req,res,next)=>{
     const user=await User.findOne({email:req.body.email})
     if(user){
       const token=jwt.sign({id:user._id},process.env.JWT_SECRET);
-      res.cookie('access_token',token,{
-        httpOnly:true
-      }).status(200).json(user)
+      res
+        .cookie("access_token", token, {
+          httpOnly: true,
+        })
+        .status(200)
+        .json(user);
     }
     else{
       const generatePassword =
@@ -77,9 +80,11 @@ export const google=async(req,res,next)=>{
       await newUser.save()
       const token=jwt.sign({id:newUser._id},process.env.JWT_SECRET)
       
+      
       const sendingData = await User.findOne({ email: email }).select("username");
 
-      res.cookie("token", token, { httpOnly: true }).status(200).json(sendingData);
+      res.cookie("token", token, {
+          httpOnly: true}) .status(200).json(sendingData);
     }
 
   }
