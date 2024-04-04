@@ -35,12 +35,13 @@ export const signin= async (req,res,next)=>{
     }
 
     const token=jwt.sign({id:validUser._id},process.env.JWT_SECRET)
-
+    // console.log(token)
     // const{password:pass,...rest}=validUser._doc///destructure password and other info(I.E -- in REST)
 
     const sendingData = await User.findOne({email:email }).select("username");
     
-    res.cookie('token',token,{httpOnly:true}).status(200).json(sendingData)
+    res.cookie('jwt',token,{httpOnly:true}).status(200).json(sendingData)
+    // Window.localStorage.setItem('token',JSON.stringify(sendingData))
 
 
   }
@@ -83,7 +84,7 @@ export const google=async(req,res,next)=>{
       
       const sendingData = await User.findOne({ email: email }).select("username");
 
-      res.cookie("token", token, {
+      res.cookie("jwt", token, {
           httpOnly: true}) .status(200).json(sendingData);
     }
 

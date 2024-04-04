@@ -27,7 +27,8 @@ app.listen(3000,()=>{
 // app.get('/test',(req,res)=>{
 //     res.json({message:'Hello world'})
 // })
-
+// app.use(cors())
+app.use(cookieParser());
 
 app.use('/api/user',userRouter)
 app.use('/api/auth',authRouter)
@@ -42,5 +43,3 @@ app.use((err, req, res, next) => {
     message,
   });
 });
-
-app.use(cookieParser())
