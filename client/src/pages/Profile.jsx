@@ -1,17 +1,20 @@
 import React, { useRef, useState,useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {getDownloadURL, getStorage,ref, uploadBytesResumable } from 'firebase/storage'
 import { app } from '../firebase/firebase'
+import { updateUserStart,updateUserFailure,updateUserSuccess } from '../redux/user/userSlice'
+// import { UseDispatch  from 'react-redux'
+import {Link} from 'react-router-dom'
 
 const Profile = () => {
-
+  const dispatch=useDispatch()
   const fileRef=useRef(null)
   const {currentUser}=useSelector((state)=>state.user)
   const [file,setFile]=useState(undefined)
   const[filePercent,setFilePercent]=useState(0)
   const[fileUploadError,setFileUploadError]=useState(false)
   const[formData,setFormData]=useState({})
-  // console.log(formData)
+  const {username,email}=currentUser
 
   // console.log(file)
 
@@ -44,6 +47,40 @@ const Profile = () => {
     }
     )
   }
+  
+
+    const handleChange = (e) => {
+      setFormData({ ...formData, [e.target.id]: e.target.value });
+    };
+
+    const handleSubmit=async (e)=>{
+      e.preventDefault()
+      try{
+        dispatch(updateUserStart());
+
+        const res=awaitfetch(`/api/user/update/${currentUser._id}`,{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify(formData)
+        });
+
+        const data=await res.json()
+
+        if(data.success===false){
+          dispatch(updateUserFailure(data.message));
+
+        }
+
+        dispatch(updateUserSuccess(data))
+      }
+      catch(err){
+          dispatch(updateUserFailure(err.message))
+      }
+    }
+
+    
 
   useEffect(()=>{
     if(file){
@@ -54,7 +91,7 @@ const Profile = () => {
   return (
     <div className="p-3 max-w-lg mx-auto gap-4">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
-      <form className="flex flex-col gap-y-3">
+      <form className="flex flex-col gap-y-3" onSubmit={handleSubmit}>
         <input onChange={(e)=>setFile(e.target.files[0])} type='file' ref={fileRef} hidden accept='image/*'/> 
         <img
           src={formData.avatar || currentUser.avatar}
@@ -74,22 +111,28 @@ const Profile = () => {
           placeholder="username"
           className="border p-3 rounded-lg"
           id="username"
+          defaultValue={username}
+          onChange={handleChange}
         />
         <input
           type="text"
           placeholder="email"
           className="border p-3 rounded-lg"
           id="email"
+          onChange={handleChange}
+          defaultValue={email}
         />
         <input
           type="text"
           placeholder="password"
           className="border p-3 rounded-lg"
           id="password"
-        />
+          onChange={handleChange}/>
+
         <button className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80">
-          Update
-        </button>
+          Update     </button>
+        <Link to='/create-listing' className='bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95'>Create Listing
+        </Link>
       </form>
 
       <div className="flex justify-between mt-5">
