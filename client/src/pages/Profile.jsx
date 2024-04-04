@@ -15,7 +15,8 @@ const Profile = () => {
   const[fileUploadError,setFileUploadError]=useState(false)
   const[formData,setFormData]=useState({})
   const {username,email}=currentUser
-
+  const[showListingError,setShowListingError]=useState(false)
+  const[userListings,setUserListings]=useState([])
   // console.log(file)
 
   // firebase Storage
@@ -52,6 +53,25 @@ const Profile = () => {
     const handleChange = (e) => {
       setFormData({ ...formData, [e.target.id]: e.target.value });
     };
+
+    const handleShowListing=async ()=>{
+        try{
+            const res=await fetch(`/api/user/listing/${currentUser._id}`);
+            const data=await res.json()
+            // console.log(data)
+            if(data.success===false){
+              setShowListingError(true)
+              return
+            }
+            setUserListings(data);
+
+        }
+        catch(err){
+          showListingError(true)
+
+        }
+    }
+
 
     const handleSubmit=async (e)=>{
       e.preventDefault()
@@ -92,19 +112,31 @@ const Profile = () => {
     <div className="p-3 max-w-lg mx-auto gap-4">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
       <form className="flex flex-col gap-y-3" onSubmit={handleSubmit}>
-        <input onChange={(e)=>setFile(e.target.files[0])} type='file' ref={fileRef} hidden accept='image/*'/> 
+        <input
+          onChange={(e) => setFile(e.target.files[0])}
+          type="file"
+          ref={fileRef}
+          hidden
+          accept="image/*"
+        />
         <img
           src={formData.avatar || currentUser.avatar}
           alt=""
           className="rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2"
-          onClick={()=>fileRef.current.click()}
+          onClick={() => fileRef.current.click()}
         />
-        <p className='text-sm self-center'>
-          {
-            fileUploadError ? (<span className='text-red-700'>Error Image Upload (Img must be less than 2MB)</span> ) : 
-            filePercent>0 && filePercent<100 ? (<span className='text-green-600'>{`uploading ${filePercent}%`}</span>) :
-            (filePercent===100 ? (<span className='text-green-600'>Image Successfully uploaded</span>) :'')
-          }
+        <p className="text-sm self-center">
+          {fileUploadError ? (
+            <span className="text-red-700">
+              Error Image Upload (Img must be less than 2MB)
+            </span>
+          ) : filePercent > 0 && filePercent < 100 ? (
+            <span className="text-green-600">{`uploading ${filePercent}%`}</span>
+          ) : filePercent === 100 ? (
+            <span className="text-green-600">Image Successfully uploaded</span>
+          ) : (
+            ""
+          )}
         </p>
         <input
           type="text"
@@ -127,17 +159,64 @@ const Profile = () => {
           placeholder="password"
           className="border p-3 rounded-lg"
           id="password"
-          onChange={handleChange}/>
+          onChange={handleChange}
+        />
 
         <button className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80">
-          Update     </button>
-        <Link to='/create-listing' className='bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95'>Create Listing
+          Update{" "}
+        </button>
+        <Link
+          to="/create-listing"
+          className="bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95"
+        >
+          Create Listing
         </Link>
       </form>
 
       <div className="flex justify-between mt-5">
         <span className="text-red-700 cursor-pointer">Delete account</span>
         <span className="text-red-700 cursor-pointer">Sign out</span>
+        </div>
+
+      <div>
+        <button
+          onClick={handleShowListing}
+          className="text-green-700 w-full uppercase"
+        >
+          show listings
+        </button>
+        <p className="text-red-700 mt-5">
+          {showListingError ? "Error show Listings" : ""}
+        </p>
+      </div>
+
+      <div>
+        {userListings &&
+          userListings.length > 0 &&
+          <div className='flex flex-col gap-4'>
+            <h1 className='text-center mt-7 text-2xl font-semibold '></h1>
+          {userListings.map((listing) => (
+            <div
+              className="border rounded-lg p-3 flex justify-between items-center gap-4"
+              key={listing._id}
+            >
+              <Link to={`listing/${listing.id}`}>
+                <img
+                  src={listing.imageUrls[0]}
+                  alt="listing cover"
+                  className="h-16 w-16 object-contain rounded-lg"
+                />
+              </Link>
+              <Link to={`/listing/${listing._id}`} className='flex-1'>
+                <p>{listing.name}</p>
+              </Link>
+              <div className='flex flex-col items-center'>
+                <button className='text-red-700 uppercase'>Delete</button>
+                <button className='text-green-700 uppercase'>Edit</button>
+                </div>
+            </div>
+          ))}
+          </div>}
       </div>
     </div>
   );
