@@ -13,3 +13,18 @@ export const createListing=async(req,res,next)=>{
 };
 
 
+export const deleteListing= async(req,res,next)=>{
+    try {
+        const listing = await Listing.findByIdAndDelete(req.params.id);
+        if (!listing) {
+          return next(errorHandler(404, "Listing npt found..!"));
+        }
+        res.status(200).json("Listing has been successfully deleted");
+
+    } 
+    catch (error) {
+        
+    }
+}
+
+
