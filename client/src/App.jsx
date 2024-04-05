@@ -10,6 +10,7 @@ import PrivateRoute from './components/PrivateRoute';
 import CreateListing from './pages/CreateListing';
 import UpdateListing from './pages/UpdateListing';
 import ListingPage from './pages/ListingPage';
+import Search from './pages/Search';
 
 
 
@@ -20,6 +21,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
+        <Route path="/search" element={<Search />} />
 
         <Route element={<PrivateRoute />}>
           <Route path="/profile" element={<Profile />} />
@@ -29,7 +31,7 @@ const App = () => {
 
         <Route path="/sign-in" element={<Signin />} />
         <Route path="/sign-up" element={<SignUp />} />
-        <Route path='/listing/:id' element={<ListingPage/>}/>
+        <Route path="/listing/:id" element={<ListingPage />} />
       </Routes>
     </BrowserRouter>
   );
